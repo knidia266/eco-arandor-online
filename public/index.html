@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -5,292 +6,459 @@
 <title>Eco Arandor Online</title>
 
 <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
 }
 
-body {
-  background: #0b0f14;
-  color: white;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
+body{
+background:#0b0f14;
+overflow:hidden;
+color:white;
 }
 
-#gameArea {
-  position: relative;
-  width: 960px;
-  height: 640px;
-  margin: 20px auto;
-  border: 4px solid #222;
-  box-shadow: 0 0 40px #000;
-  overflow: hidden;
-  background: #2f7d32;
+#gameContainer{
+position:relative;
+width:100vw;
+height:100vh;
+overflow:hidden;
 }
 
-canvas {
-  display: block;
-  image-rendering: pixelated;
+canvas{
+display:block;
+background:#2d7f36;
+image-rendering:pixelated;
 }
 
-#hud {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  background: rgba(0,0,0,0.7);
-  border: 1px solid #555;
-  border-radius: 10px;
-  padding: 12px;
-  font-size: 14px;
+#hud{
+position:absolute;
+top:20px;
+left:20px;
+background:rgba(0,0,0,.6);
+padding:15px;
+border-radius:12px;
+border:1px solid #444;
+backdrop-filter:blur(4px);
 }
 
-#chatBox {
-  position: absolute;
-  bottom: 15px;
-  left: 15px;
-  width: 330px;
-  background: rgba(0,0,0,0.75);
-  border: 1px solid #555;
-  border-radius: 10px;
-  padding: 10px;
+#hud h1{
+font-size:18px;
+margin-bottom:5px;
+color:#7ee787;
 }
 
-#messages {
-  height: 110px;
-  overflow-y: auto;
-  font-size: 13px;
-  margin-bottom: 8px;
+#chat{
+position:absolute;
+left:20px;
+bottom:20px;
+width:320px;
+background:rgba(0,0,0,.65);
+border-radius:12px;
+padding:10px;
+border:1px solid #444;
 }
 
-#chatInput {
-  width: 100%;
-  padding: 8px;
-  border: none;
-  outline: none;
-  border-radius: 6px;
-  background: #111;
-  color: white;
+#messages{
+height:120px;
+overflow-y:auto;
+font-size:13px;
+margin-bottom:8px;
 }
 
-#instructions {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  background: rgba(0,0,0,0.7);
-  border: 1px solid #555;
-  border-radius: 10px;
-  padding: 12px;
-  font-size: 14px;
+#messages div{
+margin-bottom:5px;
 }
+
+#chatInput{
+width:100%;
+padding:8px;
+border:none;
+outline:none;
+background:#111;
+color:white;
+border-radius:8px;
+}
+
+#online{
+color:#7ee787;
+}
+
 </style>
 </head>
 
 <body>
 
-<div id="gameArea">
-  <canvas id="game" width="960" height="640"></canvas>
+<div id="gameContainer">
 
-  <div id="hud">
-    <strong>Eco Arandor Online</strong><br>
-    Jogadores: <span id="count">0</span><br>
-    HP: 100<br>
-    Classe: Aventureiro
-  </div>
+<canvas id="game"></canvas>
 
-  <div id="instructions">
-    WASD para mover<br>
-    Enter para chat<br>
-    Multiplayer online
-  </div>
+<div id="hud">
+<h1>Eco Arandor Online</h1>
+<div>Jogadores: <span id="online">0</span></div>
+<div>WASD para mover</div>
+<div>Enter para chat</div>
+</div>
 
-  <div id="chatBox">
-    <div id="messages"></div>
-    <input id="chatInput" placeholder="Digite algo..." />
-  </div>
+<div id="chat">
+<div id="messages"></div>
+<input id="chatInput" placeholder="Digite algo..." />
+</div>
+
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
+
 const socket = io();
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+window.addEventListener("resize",()=>{
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+});
+
 let players = {};
-let me = { x: 200, y: 200, speed: 4 };
-let keys = {};
+
+const me = {
+x:400,
+y:300,
+speed:4
+};
+
+const keys = {};
+
+document.addEventListener("keydown",e=>{
+
+if(document.activeElement.id === "chatInput") return;
+
+keys[e.key.toLowerCase()] = true;
+
+});
+
+document.addEventListener("keyup",e=>{
+keys[e.key.toLowerCase()] = false;
+});
+
+function move(){
+
+let moving = false;
+
+if(keys["w"]){
+me.y -= me.speed;
+moving = true;
+}
+
+if(keys["s"]){
+me.y += me.speed;
+moving = true;
+}
+
+if(keys["a"]){
+me.x -= me.speed;
+moving = true;
+}
+
+if(keys["d"]){
+me.x += me.speed;
+moving = true;
+}
+
+if(moving){
+
+socket.emit("move",{
+x:me.x,
+y:me.y
+});
+
+}
+
+}
+
+socket.on("players",serverPlayers=>{
+
+players = serverPlayers;
+
+if(players[socket.id]){
+
+me.x += (players[socket.id].x - me.x) * 0.35;
+me.y += (players[socket.id].y - me.y) * 0.35;
+
+}
+
+document.getElementById("online").innerText =
+Object.keys(players).length;
+
+});
+
+socket.on("chat",msg=>{
+
+const div = document.createElement("div");
+div.textContent = msg;
+
+const messages = document.getElementById("messages");
+
+messages.appendChild(div);
+
+messages.scrollTop = messages.scrollHeight;
+
+});
+
+document.getElementById("chatInput")
+.addEventListener("keydown",e=>{
+
+if(e.key === "Enter"){
+
+const value = e.target.value.trim();
+
+if(value !== ""){
+
+socket.emit("chat",value);
+
+e.target.value = "";
+
+}
+
+}
+
+});
 
 const trees = [];
 const rocks = [];
 const flowers = [];
+const lakes = [];
 
-for (let i = 0; i < 35; i++) {
-  trees.push({
-    x: Math.random() * 920 + 20,
-    y: Math.random() * 600 + 20
-  });
-}
+for(let i=0;i<80;i++){
 
-for (let i = 0; i < 25; i++) {
-  rocks.push({
-    x: Math.random() * 920 + 20,
-    y: Math.random() * 600 + 20
-  });
-}
-
-for (let i = 0; i < 60; i++) {
-  flowers.push({
-    x: Math.random() * 940 + 10,
-    y: Math.random() * 620 + 10,
-    color: Math.random() > 0.5 ? "#fff" : "#ffd23f"
-  });
-}
-
-document.addEventListener("keydown", e => {
-  if (document.activeElement.id === "chatInput") return;
-  keys[e.key.toLowerCase()] = true;
+trees.push({
+x:Math.random()*4000-2000,
+y:Math.random()*4000-2000
 });
 
-document.addEventListener("keyup", e => {
-  keys[e.key.toLowerCase()] = false;
+}
+
+for(let i=0;i<50;i++){
+
+rocks.push({
+x:Math.random()*4000-2000,
+y:Math.random()*4000-2000
 });
 
-function updateMovement() {
-  if (keys["w"]) me.y -= me.speed;
-  if (keys["s"]) me.y += me.speed;
-  if (keys["a"]) me.x -= me.speed;
-  if (keys["d"]) me.x += me.speed;
-
-  me.x = Math.max(20, Math.min(940, me.x));
-  me.y = Math.max(20, Math.min(620, me.y));
-
-  socket.emit("move", { x: me.x, y: me.y });
 }
 
-socket.on("players", data => {
-  players = data;
+for(let i=0;i<250;i++){
 
-  if (players[socket.id]) {
-    me.x = players[socket.id].x;
-    me.y = players[socket.id].y;
-  }
-
-  document.getElementById("count").innerText = Object.keys(players).length;
+flowers.push({
+x:Math.random()*4000-2000,
+y:Math.random()*4000-2000,
+c:Math.random()>.5?"#fff":"#ffd54f"
 });
 
-socket.on("chat", msg => {
-  const box = document.getElementById("messages");
-  box.innerHTML += `<div>${msg}</div>`;
-  box.scrollTop = box.scrollHeight;
+}
+
+for(let i=0;i<4;i++){
+
+lakes.push({
+x:Math.random()*3000-1500,
+y:Math.random()*3000-1500,
+w:300,
+h:220
 });
 
-document.getElementById("chatInput").addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    const input = e.target;
-    if (input.value.trim() !== "") {
-      socket.emit("chat", input.value.trim());
-      input.value = "";
-    }
-  }
+}
+
+function worldToScreen(x,y){
+
+return{
+x:x-me.x+canvas.width/2,
+y:y-me.y+canvas.height/2
+};
+
+}
+
+function drawGround(){
+
+ctx.fillStyle = "#2d7f36";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+for(let x=-100;x<canvas.width+100;x+=64){
+
+for(let y=-100;y<canvas.height+100;y+=64){
+
+ctx.fillStyle =
+(x+y)%128===0?"#317f39":"#2b7332";
+
+ctx.fillRect(x,y,64,64);
+
+}
+
+}
+
+}
+
+function drawLakes(){
+
+lakes.forEach(l=>{
+
+const p = worldToScreen(l.x,l.y);
+
+ctx.fillStyle = "#1d5ea8";
+
+ctx.beginPath();
+
+ctx.roundRect(p.x,p.y,l.w,l.h,40);
+
+ctx.fill();
+
+ctx.fillStyle = "rgba(255,255,255,.12)";
+
+ctx.fillRect(p.x+20,p.y+20,l.w-40,20);
+
 });
 
-function drawGrass() {
-  ctx.fillStyle = "#2f7d32";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  for (let y = 0; y < canvas.height; y += 32) {
-    for (let x = 0; x < canvas.width; x += 32) {
-      ctx.fillStyle = (x + y) % 64 === 0 ? "#347f37" : "#2c7330";
-      ctx.fillRect(x, y, 32, 32);
-    }
-  }
-
-  for (let i = 0; i < 250; i++) {
-    ctx.fillStyle = "rgba(255,255,255,0.08)";
-    ctx.fillRect((i * 73) % 960, (i * 41) % 640, 2, 2);
-  }
 }
 
-function drawTree(x, y) {
-  ctx.fillStyle = "#5a3518";
-  ctx.fillRect(x - 6, y + 8, 12, 25);
+function drawTrees(){
 
-  ctx.fillStyle = "#145c24";
-  ctx.beginPath();
-  ctx.arc(x, y, 28, 0, Math.PI * 2);
-  ctx.fill();
+trees.forEach(t=>{
 
-  ctx.fillStyle = "#1e7b32";
-  ctx.beginPath();
-  ctx.arc(x - 8, y - 8, 18, 0, Math.PI * 2);
-  ctx.fill();
+const p = worldToScreen(t.x,t.y);
+
+ctx.fillStyle = "rgba(0,0,0,.25)";
+ctx.beginPath();
+ctx.ellipse(p.x,p.y+25,30,12,0,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillStyle = "#5a3418";
+ctx.fillRect(p.x-6,p.y,12,35);
+
+ctx.fillStyle = "#145c24";
+ctx.beginPath();
+ctx.arc(p.x,p.y-10,35,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillStyle = "#1c7a31";
+ctx.beginPath();
+ctx.arc(p.x-12,p.y-18,20,0,Math.PI*2);
+ctx.fill();
+
+});
+
 }
 
-function drawRock(x, y) {
-  ctx.fillStyle = "#777";
-  ctx.beginPath();
-  ctx.ellipse(x, y, 14, 10, 0, 0, Math.PI * 2);
-  ctx.fill();
+function drawFlowers(){
 
-  ctx.fillStyle = "#999";
-  ctx.beginPath();
-  ctx.ellipse(x - 4, y - 3, 5, 3, 0, 0, Math.PI * 2);
-  ctx.fill();
+flowers.forEach(f=>{
+
+const p = worldToScreen(f.x,f.y);
+
+ctx.fillStyle = f.c;
+ctx.fillRect(p.x,p.y,4,4);
+
+});
+
 }
 
-function drawPlayer(p, isMe) {
-  ctx.save();
-  ctx.translate(p.x, p.y);
+function drawRocks(){
 
-  ctx.fillStyle = isMe ? "#2196f3" : "#ffcc33";
-  ctx.fillRect(-12, -18, 24, 32);
+rocks.forEach(r=>{
 
-  ctx.fillStyle = "#f5c16c";
-  ctx.fillRect(-10, -34, 20, 18);
+const p = worldToScreen(r.x,r.y);
 
-  ctx.fillStyle = isMe ? "#0d47a1" : "#8b5a2b";
-  ctx.fillRect(-12, 12, 8, 18);
-  ctx.fillRect(4, 12, 8, 18);
+ctx.fillStyle = "#777";
 
-  ctx.fillStyle = "#111";
-  ctx.fillRect(-5, -28, 3, 3);
-  ctx.fillRect(4, -28, 3, 3);
+ctx.beginPath();
+ctx.ellipse(p.x,p.y,14,10,0,0,Math.PI*2);
+ctx.fill();
 
-  ctx.restore();
+ctx.fillStyle = "#999";
 
-  ctx.fillStyle = "white";
-  ctx.font = "12px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText(p.name || "Player", p.x, p.y - 42);
-  ctx.textAlign = "left";
+ctx.beginPath();
+ctx.ellipse(p.x-4,p.y-3,5,3,0,0,Math.PI*2);
+ctx.fill();
+
+});
+
 }
 
-function drawWorld() {
-  drawGrass();
+function drawPlayer(p,isMe){
 
-  flowers.forEach(f => {
-    ctx.fillStyle = f.color;
-    ctx.fillRect(f.x, f.y, 4, 4);
-  });
+const pos = worldToScreen(p.x,p.y);
 
-  rocks.forEach(r => drawRock(r.x, r.y));
-  trees.forEach(t => drawTree(t.x, t.y));
+ctx.fillStyle = "rgba(0,0,0,.25)";
+ctx.beginPath();
+ctx.ellipse(pos.x,pos.y+28,18,8,0,0,Math.PI*2);
+ctx.fill();
 
-  for (const id in players) {
-    drawPlayer(players[id], id === socket.id);
-  }
+ctx.fillStyle = isMe ? "#2ea8ff" : p.color || "#ffd54f";
+
+ctx.fillRect(pos.x-14,pos.y-18,28,34);
+
+ctx.fillStyle = "#f5c16c";
+ctx.fillRect(pos.x-11,pos.y-38,22,20);
+
+ctx.fillStyle = "#222";
+ctx.fillRect(pos.x-6,pos.y-30,3,3);
+ctx.fillRect(pos.x+3,pos.y-30,3,3);
+
+ctx.fillStyle = "#0d47a1";
+ctx.fillRect(pos.x-14,pos.y+15,10,18);
+ctx.fillRect(pos.x+4,pos.y+15,10,18);
+
+ctx.fillStyle = "#fff";
+ctx.font = "13px Arial";
+ctx.textAlign = "center";
+
+ctx.fillText(
+p.name || "Player",
+pos.x,
+pos.y-48
+);
+
+ctx.textAlign = "left";
+
 }
 
-function loop() {
-  updateMovement();
-  drawWorld();
-  requestAnimationFrame(loop);
+function draw(){
+
+drawGround();
+drawLakes();
+drawFlowers();
+drawRocks();
+drawTrees();
+
+for(let id in players){
+
+drawPlayer(
+players[id],
+id === socket.id
+);
+
+}
+
+}
+
+function loop(){
+
+move();
+draw();
+
+requestAnimationFrame(loop);
+
 }
 
 loop();
+
 </script>
 
 </body>
 </html>
+```

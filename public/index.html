@@ -1,26 +1,114 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>MMORPG Indie</title>
+<meta charset="UTF-8">
+<title>Eco Arandor Online</title>
 
-  <style>
-    body{
-      margin:0;
-      overflow:hidden;
-      background:#111;
-    }
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    canvas{
-      background:#1f5f2e;
-      display:block;
-      margin:auto;
-    }
-  </style>
+body {
+  background: #0b0f14;
+  color: white;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+#gameArea {
+  position: relative;
+  width: 960px;
+  height: 640px;
+  margin: 20px auto;
+  border: 4px solid #222;
+  box-shadow: 0 0 40px #000;
+  overflow: hidden;
+  background: #2f7d32;
+}
+
+canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+#hud {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(0,0,0,0.7);
+  border: 1px solid #555;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+#chatBox {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  width: 330px;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid #555;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+#messages {
+  height: 110px;
+  overflow-y: auto;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+#chatInput {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  outline: none;
+  border-radius: 6px;
+  background: #111;
+  color: white;
+}
+
+#instructions {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  background: rgba(0,0,0,0.7);
+  border: 1px solid #555;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+}
+</style>
 </head>
+
 <body>
 
-<canvas id="game" width="900" height="600"></canvas>
+<div id="gameArea">
+  <canvas id="game" width="960" height="640"></canvas>
+
+  <div id="hud">
+    <strong>Eco Arandor Online</strong><br>
+    Jogadores: <span id="count">0</span><br>
+    HP: 100<br>
+    Classe: Aventureiro
+  </div>
+
+  <div id="instructions">
+    WASD para mover<br>
+    Enter para chat<br>
+    Multiplayer online
+  </div>
+
+  <div id="chatBox">
+    <div id="messages"></div>
+    <input id="chatInput" placeholder="Digite algo..." />
+  </div>
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 
@@ -31,64 +119,177 @@ const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 let players = {};
+let me = { x: 200, y: 200, speed: 4 };
+let keys = {};
 
-const me = {
-  x:200,
-  y:200,
-  speed:4
-};
+const trees = [];
+const rocks = [];
+const flowers = [];
 
-const keys = {};
-
-window.addEventListener("keydown", e=>{
-  keys[e.key.toLowerCase()] = true;
-});
-
-window.addEventListener("keyup", e=>{
-  keys[e.key.toLowerCase()] = false;
-});
-
-function movePlayer(){
-
-  if(keys["w"]) me.y -= me.speed;
-  if(keys["s"]) me.y += me.speed;
-  if(keys["a"]) me.x -= me.speed;
-  if(keys["d"]) me.x += me.speed;
-
-  socket.emit("move", {
-    x: me.x,
-    y: me.y
+for (let i = 0; i < 35; i++) {
+  trees.push({
+    x: Math.random() * 920 + 20,
+    y: Math.random() * 600 + 20
   });
 }
 
-socket.on("players", serverPlayers=>{
-  players = serverPlayers;
+for (let i = 0; i < 25; i++) {
+  rocks.push({
+    x: Math.random() * 920 + 20,
+    y: Math.random() * 600 + 20
+  });
+}
+
+for (let i = 0; i < 60; i++) {
+  flowers.push({
+    x: Math.random() * 940 + 10,
+    y: Math.random() * 620 + 10,
+    color: Math.random() > 0.5 ? "#fff" : "#ffd23f"
+  });
+}
+
+document.addEventListener("keydown", e => {
+  if (document.activeElement.id === "chatInput") return;
+  keys[e.key.toLowerCase()] = true;
 });
 
-function draw(){
+document.addEventListener("keyup", e => {
+  keys[e.key.toLowerCase()] = false;
+});
 
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+function updateMovement() {
+  if (keys["w"]) me.y -= me.speed;
+  if (keys["s"]) me.y += me.speed;
+  if (keys["a"]) me.x -= me.speed;
+  if (keys["d"]) me.x += me.speed;
 
-  for(let id in players){
+  me.x = Math.max(20, Math.min(940, me.x));
+  me.y = Math.max(20, Math.min(620, me.y));
 
-    const p = players[id];
+  socket.emit("move", { x: me.x, y: me.y });
+}
 
-    ctx.fillStyle = id === socket.id ? "#00bfff" : "#ffd700";
+socket.on("players", data => {
+  players = data;
 
-    ctx.fillRect(p.x,p.y,30,30);
+  if (players[socket.id]) {
+    me.x = players[socket.id].x;
+    me.y = players[socket.id].y;
+  }
+
+  document.getElementById("count").innerText = Object.keys(players).length;
+});
+
+socket.on("chat", msg => {
+  const box = document.getElementById("messages");
+  box.innerHTML += `<div>${msg}</div>`;
+  box.scrollTop = box.scrollHeight;
+});
+
+document.getElementById("chatInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    const input = e.target;
+    if (input.value.trim() !== "") {
+      socket.emit("chat", input.value.trim());
+      input.value = "";
+    }
+  }
+});
+
+function drawGrass() {
+  ctx.fillStyle = "#2f7d32";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  for (let y = 0; y < canvas.height; y += 32) {
+    for (let x = 0; x < canvas.width; x += 32) {
+      ctx.fillStyle = (x + y) % 64 === 0 ? "#347f37" : "#2c7330";
+      ctx.fillRect(x, y, 32, 32);
+    }
+  }
+
+  for (let i = 0; i < 250; i++) {
+    ctx.fillStyle = "rgba(255,255,255,0.08)";
+    ctx.fillRect((i * 73) % 960, (i * 41) % 640, 2, 2);
   }
 }
 
-function gameLoop(){
+function drawTree(x, y) {
+  ctx.fillStyle = "#5a3518";
+  ctx.fillRect(x - 6, y + 8, 12, 25);
 
-  movePlayer();
-  draw();
+  ctx.fillStyle = "#145c24";
+  ctx.beginPath();
+  ctx.arc(x, y, 28, 0, Math.PI * 2);
+  ctx.fill();
 
-  requestAnimationFrame(gameLoop);
+  ctx.fillStyle = "#1e7b32";
+  ctx.beginPath();
+  ctx.arc(x - 8, y - 8, 18, 0, Math.PI * 2);
+  ctx.fill();
 }
 
-gameLoop();
+function drawRock(x, y) {
+  ctx.fillStyle = "#777";
+  ctx.beginPath();
+  ctx.ellipse(x, y, 14, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
 
+  ctx.fillStyle = "#999";
+  ctx.beginPath();
+  ctx.ellipse(x - 4, y - 3, 5, 3, 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawPlayer(p, isMe) {
+  ctx.save();
+  ctx.translate(p.x, p.y);
+
+  ctx.fillStyle = isMe ? "#2196f3" : "#ffcc33";
+  ctx.fillRect(-12, -18, 24, 32);
+
+  ctx.fillStyle = "#f5c16c";
+  ctx.fillRect(-10, -34, 20, 18);
+
+  ctx.fillStyle = isMe ? "#0d47a1" : "#8b5a2b";
+  ctx.fillRect(-12, 12, 8, 18);
+  ctx.fillRect(4, 12, 8, 18);
+
+  ctx.fillStyle = "#111";
+  ctx.fillRect(-5, -28, 3, 3);
+  ctx.fillRect(4, -28, 3, 3);
+
+  ctx.restore();
+
+  ctx.fillStyle = "white";
+  ctx.font = "12px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(p.name || "Player", p.x, p.y - 42);
+  ctx.textAlign = "left";
+}
+
+function drawWorld() {
+  drawGrass();
+
+  flowers.forEach(f => {
+    ctx.fillStyle = f.color;
+    ctx.fillRect(f.x, f.y, 4, 4);
+  });
+
+  rocks.forEach(r => drawRock(r.x, r.y));
+  trees.forEach(t => drawTree(t.x, t.y));
+
+  for (const id in players) {
+    drawPlayer(players[id], id === socket.id);
+  }
+}
+
+function loop() {
+  updateMovement();
+  drawWorld();
+  requestAnimationFrame(loop);
+}
+
+loop();
 </script>
 
 </body>

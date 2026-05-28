@@ -1,734 +1,630 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Eco Arandor Online</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Aetheria Online</title>
 <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  user-select: none;
-}
-
-body {
-  overflow: hidden;
-  background: #090d12;
-  color: #fff;
-}
-
-canvas {
-  display: block;
-  background: #1f6f36;
-}
-
-.panel {
-  position: absolute;
-  background: rgba(10, 14, 22, 0.82);
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-  backdrop-filter: blur(8px);
-}
-
-#topHud {
-  top: 14px;
-  left: 14px;
-  width: 285px;
-  padding: 14px;
-}
-
-#topHud h1 {
-  font-size: 20px;
-  color: #ffd166;
-  margin-bottom: 4px;
-}
-
-.small {
-  font-size: 12px;
-  color: #b9c2d3;
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 13px;
-  margin-top: 8px;
-}
-
-.bar {
-  height: 13px;
-  width: 100%;
-  background: #101722;
-  border-radius: 99px;
-  overflow: hidden;
-  margin-top: 4px;
-  border: 1px solid rgba(255,255,255,0.09);
-}
-
-.fill {
-  height: 100%;
-  transition: width .12s linear;
-}
-
-.hp { background: linear-gradient(90deg, #ef476f, #ff8c42); }
-.mana { background: linear-gradient(90deg, #118ab2, #7b61ff); }
-.xp { background: linear-gradient(90deg, #06d6a0, #ffd166); }
-
-#rightPanel {
-  top: 14px;
-  right: 14px;
-  width: 310px;
-  max-height: calc(100vh - 28px);
-  padding: 14px;
-  overflow-y: auto;
-}
-
-h2 {
-  font-size: 15px;
-  color: #7ee787;
-  margin: 10px 0 8px;
-}
-
-button, input, select {
-  border: none;
-  outline: none;
-  border-radius: 10px;
-  padding: 9px;
-}
-
-button {
-  cursor: pointer;
-  background: linear-gradient(135deg, #ffd166, #ff9f1c);
-  color: #1a1200;
-  font-weight: bold;
-  margin-top: 7px;
-}
-
-button:hover {
-  filter: brightness(1.08);
-}
-
-input, select {
-  background: #101722;
-  color: white;
-  border: 1px solid rgba(255,255,255,0.14);
-}
-
-.full {
-  width: 100%;
-}
-
-.grid2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.itemGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
-}
-
-.slot {
-  min-height: 50px;
-  background: #101722;
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 23px;
-  position: relative;
-}
-
-.slot span {
-  position: absolute;
-  right: 6px;
-  bottom: 4px;
-  color: #ffd166;
-  font-size: 11px;
-}
-
-#chat {
-  left: 14px;
-  bottom: 14px;
-  width: 380px;
-  padding: 12px;
-}
-
-#messages {
-  height: 120px;
-  overflow-y: auto;
-  font-size: 13px;
-  line-height: 1.35;
-  margin-bottom: 8px;
-}
-
-#messages div {
-  padding: 3px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-#notice {
-  position: absolute;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 18px;
-  border-radius: 999px;
-  background: rgba(0,0,0,.72);
-  border: 1px solid rgba(255,255,255,.18);
-  font-size: 14px;
-  pointer-events: none;
-}
-
-#menu {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at center, rgba(38,78,54,.8), rgba(4,6,10,.96));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-}
-
-#menuCard {
-  width: 380px;
-  padding: 24px;
-  background: rgba(10, 14, 22, .92);
-  border: 1px solid rgba(255,255,255,.16);
-  border-radius: 18px;
-  box-shadow: 0 20px 80px rgba(0,0,0,.55);
-}
-
-#menuCard h1 {
-  color: #ffd166;
-  margin-bottom: 8px;
-}
-
-.marketRow {
-  background: #101722;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  padding: 8px;
-  margin-bottom: 7px;
-  font-size: 12px;
-}
-
-.marketRow button {
-  padding: 6px;
-  font-size: 12px;
-}
-
-@media (max-width: 900px) {
-  #rightPanel {
-    display: none;
-  }
-
-  #chat {
-    width: calc(100vw - 28px);
-  }
-}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,Arial,sans-serif;user-select:none}
+body{overflow:hidden;background:#86d5ff;color:white}
+#game{position:fixed;inset:0}
+.panel{position:absolute;background:rgba(11,16,28,.74);border:1px solid rgba(255,255,255,.18);box-shadow:0 14px 40px rgba(0,0,0,.28);backdrop-filter:blur(8px);border-radius:18px}
+button,input,select{border:0;outline:0;border-radius:12px;padding:10px}
+button{cursor:pointer;font-weight:800;background:linear-gradient(135deg,#ffd166,#ff9f1c);color:#221400}
+button:hover{filter:brightness(1.08)}
+.small{font-size:12px;color:#cbd5e1;line-height:1.35}
+#startScreen{position:fixed;inset:0;z-index:50;background:radial-gradient(circle at center,#79d7ff 0%,#3155b7 55%,#111827 100%);display:flex;align-items:center;justify-content:center}
+#startCard{width:min(900px,calc(100vw - 28px));padding:26px;border-radius:26px;background:rgba(10,18,40,.86);border:1px solid rgba(255,255,255,.24);box-shadow:0 30px 90px rgba(0,0,0,.42)}
+.logo{font-size:44px;letter-spacing:.5px;color:#ffd166;text-shadow:0 3px 0 #6b3e00;margin-bottom:8px}
+.classGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+.classCard{padding:16px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);cursor:pointer;min-height:160px}
+.classCard.active{outline:3px solid #ffd166;background:rgba(255,209,102,.15)}
+.classCard h3{color:#7ee787;margin-bottom:8px}
+#hud{top:14px;left:14px;width:380px;padding:14px 14px 12px 104px;min-height:118px}
+#portrait{position:absolute;left:14px;top:14px;width:76px;height:76px;border-radius:50%;background:radial-gradient(circle,#ffe8a3,#49a6ff);border:4px solid #ffd166;display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 0 24px rgba(255,209,102,.34)}
+#levelBadge{position:absolute;left:12px;top:82px;background:#111827;border:2px solid #ffd166;color:#ffd166;border-radius:99px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:900}
+#hud h2{font-size:20px;color:#fff}
+.bar{height:17px;border-radius:8px;background:#101827;overflow:hidden;margin-top:6px;border:1px solid rgba(255,255,255,.15);position:relative}
+.bar span{position:absolute;inset:0;text-align:center;line-height:16px;font-size:11px;font-weight:900;text-shadow:1px 1px #000}
+.fill{height:100%;transition:width .12s linear}
+.hp{background:linear-gradient(90deg,#9d0208,#ef476f,#ff9f1c)}
+.mp{background:linear-gradient(90deg,#023e8a,#118ab2,#90e0ef)}
+.xp{background:linear-gradient(90deg,#06d6a0,#ffd166)}
+#skillbar{bottom:18px;left:50%;transform:translateX(-50%);padding:10px;display:flex;gap:10px}
+.skill{width:70px;height:66px;border-radius:16px;background:rgba(11,16,28,.82);border:1px solid rgba(255,255,255,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900}
+.skill b{font-size:22px}.skill span{font-size:11px;color:#cbd5e1}
+#questPanel{top:14px;right:14px;width:330px;padding:14px}
+#questPanel h2,#bossPanel h2,#inventory h2{font-size:17px;color:#7ee787;margin-bottom:8px}
+.quest{background:#101827;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px;margin-top:8px;font-size:13px}
+#bossPanel{display:none;top:165px;right:14px;width:330px;padding:14px}
+#minimapPanel{right:14px;bottom:14px;width:230px;padding:10px}
+#minimap{width:210px;height:150px;border-radius:12px;background:#101827;border:1px solid rgba(255,255,255,.15)}
+#inventory{display:none;left:14px;bottom:14px;width:320px;padding:14px}
+.items{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.item{height:58px;background:#101827;border:1px solid rgba(255,255,255,.12);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;position:relative}.item span{position:absolute;right:7px;bottom:5px;color:#ffd166;font-size:12px}
+#dialogue{display:none;left:50%;bottom:110px;transform:translateX(-50%);width:min(720px,calc(100vw - 40px));padding:18px;background:rgba(8,13,24,.86)}
+#dialogueName{color:#ffd166;font-weight:900;margin-bottom:6px}
+#toast{top:50%;left:50%;transform:translate(-50%,-50%);padding:12px 18px;border-radius:999px;background:rgba(0,0,0,.72);display:none;z-index:80}
+#menu{left:14px;top:150px;width:74px;height:44px;overflow:hidden;padding:10px;cursor:pointer;transition:.18s}
+#menu.open{width:260px;height:auto;cursor:default}
+#menuTitle{text-align:center;color:#ffd166;font-weight:900}
+#menu.open #menuTitle{display:none}
+#menuContent{display:none}#menu.open #menuContent{display:block}
+.menuBtn{width:100%;margin-top:8px;background:#101827;color:#ffd166;border:1px solid rgba(255,255,255,.15)}
+#crosshair{position:fixed;left:50%;top:50%;width:16px;height:16px;margin-left:-8px;margin-top:-8px;border:2px solid rgba(255,255,255,.65);border-radius:50%;pointer-events:none}
+@media(max-width:800px){#questPanel,#bossPanel{display:none!important}.classGrid{grid-template-columns:1fr}.logo{font-size:34px}#hud{width:calc(100vw - 28px)}}
 </style>
 </head>
-
 <body>
-<canvas id="game"></canvas>
+<div id="game"></div>
 
-<div id="menu">
-  <div id="menuCard">
-    <h1>Eco Arandor Online</h1>
-    <p class="small">MMORPG indie multiplayer. Escolha seu nome e entre no mundo.</p>
+<div id="startScreen">
+  <div id="startCard">
+    <div class="logo">Aetheria Online</div>
+    <p class="small">Anime Fantasy MMORPG prototype: voe por ilhas mágicas, complete missões, derrote bosses por fases e evolua seu herói.</p>
     <br>
-    <input id="nameInput" class="full" maxlength="16" placeholder="Nome do personagem">
-    <button class="full" onclick="enterGame()">Entrar no jogo</button>
-    <p class="small" style="margin-top:12px;">Controles: WASD move, Espaço ataca, Enter chat.</p>
+    <input id="heroName" placeholder="Nome do personagem" value="Arandor" style="width:100%;background:#101827;color:white;border:1px solid rgba(255,255,255,.2)">
+    <div class="classGrid">
+      <div class="classCard active" data-class="blade"><h3>⚔️ Blade</h3><p class="small">Dano físico rápido, combos curtos e boa resistência.</p></div>
+      <div class="classCard" data-class="ranger"><h3>🏹 Ranger</h3><p class="small">Ataque à distância, crítico alto e mobilidade no ar.</p></div>
+      <div class="classCard" data-class="arcanist"><h3>🔮 Arcanist</h3><p class="small">Magias em área, explosões elementais e controle.</p></div>
+    </div>
+    <button onclick="startGame()" style="width:100%;font-size:18px">Entrar em Aetheria</button>
+    <p class="small" style="margin-top:12px">Controles: WASD mover • Mouse mira • Clique esquerdo ataca • Q/E/R skills • F voar • I inventário • Shift dash</p>
   </div>
 </div>
 
-<div id="notice">Conectando...</div>
-
-<div id="topHud" class="panel">
-  <h1>Eco Arandor</h1>
-  <p class="small">Classe: Guardião Arcano</p>
-
-  <div class="row"><span id="pName">---</span><span>Online: <b id="online">0</b></span></div>
-  <div class="row"><span>Level <b id="level">1</b></span><span>Ouro: <b id="gold">0</b></span></div>
-
-  <div class="row"><span>Vida</span><span id="hpText">100/100</span></div>
-  <div class="bar"><div id="hpBar" class="fill hp"></div></div>
-
-  <div class="row"><span>Mana</span><span id="manaText">80/80</span></div>
-  <div class="bar"><div id="manaBar" class="fill mana"></div></div>
-
-  <div class="row"><span>XP</span><span id="xpText">0/100</span></div>
-  <div class="bar"><div id="xpBar" class="fill xp"></div></div>
-
-  <button class="full" onclick="usePotion()">Usar poção</button>
+<div id="hud" class="panel">
+  <div id="portrait">🏹</div><div id="levelBadge">1</div>
+  <h2 id="hudName">Arandor</h2>
+  <div class="small"><span id="hudClass">Ranger</span> • Ouro <b id="gold">0</b> • Fase <b id="phase">1</b></div>
+  <div class="bar"><div id="hpFill" class="fill hp"></div><span id="hpText"></span></div>
+  <div class="bar"><div id="mpFill" class="fill mp"></div><span id="mpText"></span></div>
+  <div class="bar" style="height:10px"><div id="xpFill" class="fill xp"></div></div>
 </div>
 
-<div id="rightPanel" class="panel">
-  <h2>Personagem</h2>
-  <input id="renameInput" class="full" maxlength="16" placeholder="Novo nome">
-  <button class="full" onclick="renamePlayer()">Mudar nome</button>
-
-  <h2>Inventário</h2>
-  <div id="inventory" class="itemGrid"></div>
-
-  <h2>Loja de Troca</h2>
-  <p class="small">Troque itens dropáveis por recursos úteis.</p>
-  <button class="full" onclick="shopTrade('potion')">2 Ervas → 1 Poção</button>
-  <button class="full" onclick="shopTrade('gold')">1 Cristal → 25 Ouro</button>
-
-  <h2>Mercado entre Players</h2>
-  <div class="grid2">
-    <select id="sellItem">
-      <option value="herb">Erva</option>
-      <option value="crystal">Cristal</option>
-      <option value="fang">Presa</option>
-      <option value="potion">Poção</option>
-    </select>
-    <input id="sellAmount" type="number" value="1" min="1">
+<div id="menu" class="panel" onmousedown="openMenu(event)">
+  <div id="menuTitle">Menu</div>
+  <div id="menuContent">
+    <button class="menuBtn" onclick="toggleInventory(event)">Inventário</button>
+    <button class="menuBtn" onclick="toggleFly(event)">Voar / Descer</button>
+    <button class="menuBtn" onclick="returnSpawn(event)">Voltar ao Spawn</button>
+    <button class="menuBtn" onclick="showHelp(event)">Ajuda</button>
   </div>
-  <input id="sellPrice" class="full" type="number" value="20" min="1" style="margin-top:7px;">
-  <button class="full" onclick="sellMarket()">Vender no mercado</button>
-  <div id="marketList" style="margin-top:9px;"></div>
 </div>
 
-<div id="chat" class="panel">
-  <div id="messages"></div>
-  <input id="chatInput" class="full" placeholder="Digite no chat e aperte Enter">
+<div id="questPanel" class="panel">
+  <h2>📜 Missões</h2>
+  <div id="quests"></div>
 </div>
 
-<script src="/socket.io/socket.io.js"></script>
+<div id="bossPanel" class="panel">
+  <h2>👑 Boss</h2>
+  <div class="small" id="bossName">---</div>
+  <div class="bar"><div id="bossHp" class="fill hp"></div><span id="bossHpText"></span></div>
+  <div class="quest" id="bossPhaseText">Fase 1</div>
+</div>
+
+<div id="inventory" class="panel">
+  <h2>🎒 Inventário</h2>
+  <div class="items" id="items"></div>
+</div>
+
+<div id="skillbar" class="panel">
+  <div class="skill"><b>⚔️</b><span>Click</span></div>
+  <div class="skill"><b>Q</b><span>Skill 1</span></div>
+  <div class="skill"><b>E</b><span>Skill 2</span></div>
+  <div class="skill"><b>R</b><span>Ultimate</span></div>
+  <div class="skill"><b>F</b><span>Voar</span></div>
+</div>
+
+<div id="minimapPanel" class="panel">
+  <canvas id="minimap" width="210" height="150"></canvas>
+  <p class="small">Verde: você • Vermelho: mobs • Amarelo: boss</p>
+</div>
+
+<div id="dialogue" class="panel">
+  <div id="dialogueName">NPC</div>
+  <div id="dialogueText">...</div>
+</div>
+
+<div id="toast" class="panel"></div>
+<div id="crosshair"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
-const socket = io();
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const WORLD={w:5200,h:5200};
+let chosenClass="blade";
+let running=false;
+let keys={},mouse={x:0,y:0,down:false};
+let scene,camera,renderer,clock;
+let groundGroup,entityGroup,fxGroup;
+let player,enemies=[],drops=[],npcs=[],quests=[],boss=null;
+let inventory={potion:3,crystal:0,feather:0,bossCore:0};
+let toastTimer=0,dialogueTimer=0;
+const raycaster=new THREE.Raycaster();
+const pointer=new THREE.Vector2();
+const tmpV=new THREE.Vector3();
 
-let W = canvas.width = innerWidth;
-let H = canvas.height = innerHeight;
-
-addEventListener("resize", () => {
-  W = canvas.width = innerWidth;
-  H = canvas.height = innerHeight;
-});
-
-const keys = {};
-const renderPlayers = {};
-let state = { players: {}, enemies: [], drops: [], market: [], world: { width: 2400, height: 1800 } };
-let joined = false;
-let myId = null;
-let noticeTimer = 0;
-
-const ITEM_INFO = {
-  herb: { name: "Erva", icon: "🌿" },
-  crystal: { name: "Cristal", icon: "💎" },
-  fang: { name: "Presa", icon: "🦷" },
-  potion: { name: "Poção", icon: "🧪" }
-};
-
-const mapDecor = {
-  trees: [],
-  rocks: [],
-  flowers: [],
-  lakes: []
-};
-
-function seededDecor() {
-  for (let i = 0; i < 140; i++) {
-    mapDecor.trees.push({ x: Math.random() * 2400, y: Math.random() * 1800, s: 26 + Math.random() * 18 });
-  }
-  for (let i = 0; i < 70; i++) {
-    mapDecor.rocks.push({ x: Math.random() * 2400, y: Math.random() * 1800 });
-  }
-  for (let i = 0; i < 330; i++) {
-    mapDecor.flowers.push({ x: Math.random() * 2400, y: Math.random() * 1800, c: Math.random() > .5 ? "#fff3b0" : "#ffd166" });
-  }
-  mapDecor.lakes.push({ x: 980, y: 620, w: 360, h: 230 });
-  mapDecor.lakes.push({ x: 350, y: 1180, w: 280, h: 190 });
-}
-seededDecor();
-
-function enterGame() {
-  const name = document.getElementById("nameInput").value.trim() || localStorage.getItem("ecoName") || "Aventureiro";
-  localStorage.setItem("ecoName", name);
-  document.getElementById("menu").style.display = "none";
-  socket.emit("join", { name });
-  joined = true;
-}
-
-document.getElementById("nameInput").value = localStorage.getItem("ecoName") || "";
-
-socket.on("connect", () => {
-  myId = socket.id;
-  showNotice("Conectado ao servidor.");
-});
-
-socket.on("state", s => {
-  state = s;
-
-  for (const id in state.players) {
-    if (!renderPlayers[id]) {
-      renderPlayers[id] = { ...state.players[id] };
-    }
-  }
-
-  for (const id in renderPlayers) {
-    if (!state.players[id]) delete renderPlayers[id];
-  }
-
-  updateUI();
-});
-
-socket.on("chat", msg => {
-  const box = document.getElementById("messages");
-  const div = document.createElement("div");
-  div.textContent = msg;
-  box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
-});
-
-socket.on("notice", showNotice);
-
-function showNotice(text) {
-  document.getElementById("notice").textContent = text;
-  noticeTimer = 180;
-}
-
-document.addEventListener("keydown", e => {
-  if (document.activeElement.id === "chatInput") return;
-  if (document.activeElement.tagName === "INPUT") return;
-  if (document.activeElement.tagName === "SELECT") return;
-
-  keys[e.key.toLowerCase()] = true;
-
-  if (e.code === "Space") socket.emit("attack");
-});
-
-document.addEventListener("keyup", e => {
-  keys[e.key.toLowerCase()] = false;
-});
-
-document.getElementById("chatInput").addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    const value = e.target.value.trim();
-    if (value) socket.emit("chat", value);
-    e.target.value = "";
-    e.target.blur();
-  }
-});
-
-setInterval(() => {
-  if (!joined) return;
-
-  socket.emit("input", {
-    up: !!keys["w"] || !!keys["arrowup"],
-    down: !!keys["s"] || !!keys["arrowdown"],
-    left: !!keys["a"] || !!keys["arrowleft"],
-    right: !!keys["d"] || !!keys["arrowright"]
-  });
-}, 1000 / 30);
-
-function usePotion() {
-  socket.emit("usePotion");
-}
-
-function renamePlayer() {
-  const name = document.getElementById("renameInput").value.trim();
-  if (!name) return;
-  localStorage.setItem("ecoName", name);
-  socket.emit("rename", name);
-  showNotice("Nome alterado.");
-}
-
-function shopTrade(type) {
-  socket.emit("shopTrade", { type });
-}
-
-function sellMarket() {
-  socket.emit("marketSell", {
-    item: document.getElementById("sellItem").value,
-    amount: Number(document.getElementById("sellAmount").value),
-    price: Number(document.getElementById("sellPrice").value)
-  });
-}
-
-function buyMarket(id) {
-  socket.emit("marketBuy", id);
-}
-
-function me() {
-  return state.players[myId];
-}
-
-function camera() {
-  const p = renderPlayers[myId] || me() || { x: 500, y: 500 };
-  return {
-    x: p.x - W / 2,
-    y: p.y - H / 2
+document.querySelectorAll(".classCard").forEach(card=>{
+  card.onclick=()=>{
+    document.querySelectorAll(".classCard").forEach(c=>c.classList.remove("active"));
+    card.classList.add("active");
+    chosenClass=card.dataset.class;
   };
+});
+
+const CLASS_DATA={
+  blade:{name:"Blade",icon:"⚔️",color:0x49a6ff,hp:180,mp:70,damage:28,range:95,speed:8},
+  ranger:{name:"Ranger",icon:"🏹",color:0x06d6a0,hp:135,mp:95,damage:22,range:360,speed:9.5},
+  arcanist:{name:"Arcanist",icon:"🔮",color:0xb388ff,hp:115,mp:160,damage:30,range:320,speed:8}
+};
+
+function startGame(){
+  document.getElementById("startScreen").style.display="none";
+  init();
+  running=true;
+  toast("Bem-vindo a Aetheria!");
 }
 
-function screen(x, y) {
-  const c = camera();
-  return { x: x - c.x, y: y - c.y };
+function init(){
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x8ed8ff);
+  scene.fog=new THREE.Fog(0x8ed8ff,1200,5200);
+  clock=new THREE.Clock();
+
+  camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,0.1,9000);
+  renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  document.getElementById("game").appendChild(renderer.domElement);
+
+  const hemi=new THREE.HemisphereLight(0xdff7ff,0x4d7a3a,1.5);
+  scene.add(hemi);
+  const sun=new THREE.DirectionalLight(0xfff1c2,2.6);
+  sun.position.set(1200,2200,900);
+  sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);
+  sun.shadow.camera.left=-1800;sun.shadow.camera.right=1800;sun.shadow.camera.top=1800;sun.shadow.camera.bottom=-1800;
+  scene.add(sun);
+
+  groundGroup=new THREE.Group(); entityGroup=new THREE.Group(); fxGroup=new THREE.Group();
+  scene.add(groundGroup,entityGroup,fxGroup);
+
+  buildWorld();
+  createPlayer();
+  createNPCs();
+  spawnWave(1);
+  setupQuests();
+
+  addEventListener("resize",()=>{
+    camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);
+  });
+  addEventListener("keydown",e=>{keys[e.key.toLowerCase()]=true;handleKey(e.key.toLowerCase())});
+  addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
+  addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY});
+  addEventListener("mousedown",e=>{if(e.button===0)basicAttack()});
+  animate();
 }
 
-function drawGround() {
-  const c = camera();
-  ctx.fillStyle = "#226b36";
-  ctx.fillRect(0, 0, W, H);
+function mat(color,rough=.75,metal=.05){return new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal})}
 
-  const tile = 64;
-  const startX = Math.floor(c.x / tile) * tile;
-  const startY = Math.floor(c.y / tile) * tile;
+function buildWorld(){
+  addIsland(0,0,1900,0x62c96a,"Florion Fields");
+  addIsland(1800,-1400,1300,0xd7b05e,"Sunvale Dunes");
+  addIsland(-1800,-1450,1300,0x8adff5,"Crystal Frost");
+  addIsland(1800,1500,1300,0x81433d,"Ashfall Crater");
+  addIsland(-1800,1500,1300,0x7f6ed6,"Arcane Ruins");
 
-  for (let x = startX; x < c.x + W + tile; x += tile) {
-    for (let y = startY; y < c.y + H + tile; y += tile) {
-      const p = screen(x, y);
-      ctx.fillStyle = ((x + y) / tile) % 2 === 0 ? "#28763b" : "#236d35";
-      ctx.fillRect(p.x, p.y, tile, tile);
+  for(let i=0;i<240;i++){
+    const p=randomPoint();
+    const biome=biomeAt(p.x,p.z);
+    if(Math.random()<.72)addTree(p.x,p.z,biome);
+    else addRock(p.x,p.z,biome);
+  }
+  for(let i=0;i<120;i++)addFlower(...Object.values(randomPoint()));
+  for(let i=0;i<18;i++)addFloatingCrystal(...Object.values(randomPoint()));
+}
+
+function addIsland(x,z,r,color,name){
+  const g=new THREE.Group();
+  const land=new THREE.Mesh(new THREE.CylinderGeometry(r,r*.92,80,64),mat(color,.9,.02));
+  land.position.set(x,-40,z); land.receiveShadow=true; g.add(land);
+  const rim=new THREE.Mesh(new THREE.CylinderGeometry(r*.92,r*.55,220,64),mat(0x7a5731,.9,.02));
+  rim.position.set(x,-190,z);rim.receiveShadow=true;g.add(rim);
+  groundGroup.add(g);
+
+  const label=document.createElement("div");
+  label.textContent=name;
+}
+
+function biomeAt(x,z){
+  if(x>1000&&z<-700)return "desert";
+  if(x<-1000&&z<-700)return "ice";
+  if(x>1000&&z>700)return "volcano";
+  if(x<-1000&&z>700)return "ruins";
+  return "field";
+}
+
+function randomPoint(){
+  const islands=[
+    {x:0,z:0,r:1750},{x:1800,z:-1400,r:1180},{x:-1800,z:-1450,r:1180},{x:1800,z:1500,r:1180},{x:-1800,z:1500,r:1180}
+  ];
+  const i=islands[Math.floor(Math.random()*islands.length)];
+  const a=Math.random()*Math.PI*2,d=Math.sqrt(Math.random())*i.r;
+  return{x:i.x+Math.cos(a)*d,z:i.z+Math.sin(a)*d};
+}
+
+function addTree(x,z,biome){
+  const group=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(10,14,90,8),mat(0x8a5b2f));
+  trunk.position.y=45;trunk.castShadow=true;group.add(trunk);
+  const leafColor=biome==="ice"?0xd9fbff:biome==="volcano"?0xa83228:biome==="ruins"?0x8f5bff:0x2da84a;
+  for(let i=0;i<3;i++){
+    const leaves=new THREE.Mesh(new THREE.ConeGeometry(70-i*12,90,10),mat(leafColor));
+    leaves.position.y=120+i*42;leaves.castShadow=true;group.add(leaves);
+  }
+  group.position.set(x,0,z);group.scale.setScalar(.7+Math.random()*.7);groundGroup.add(group);
+}
+
+function addRock(x,z,biome){
+  const color=biome==="ice"?0xcff9ff:biome==="desert"?0xb88444:biome==="volcano"?0x2b1d20:0x878b91;
+  const m=new THREE.Mesh(new THREE.DodecahedronGeometry(35+Math.random()*35,0),mat(color));
+  m.position.set(x,25,z);m.rotation.set(Math.random(),Math.random(),Math.random());m.castShadow=true;m.receiveShadow=true;groundGroup.add(m);
+}
+
+function addFlower(x,z){
+  const m=new THREE.Mesh(new THREE.SphereGeometry(8,8,6),mat(Math.random()>.5?0xff69b4:0xffe66d));
+  m.position.set(x,8,z);groundGroup.add(m);
+}
+
+function addFloatingCrystal(x,z){
+  const c=new THREE.Mesh(new THREE.OctahedronGeometry(24,0),mat(0x8ed8ff,.25,.25));
+  c.position.set(x,120+Math.random()*100,z);c.castShadow=true;c.userData.float=true;groundGroup.add(c);
+}
+
+function createPlayer(){
+  const data=CLASS_DATA[chosenClass];
+  const name=document.getElementById("heroName").value||"Arandor";
+  player={
+    name,classId:chosenClass,className:data.name,icon:data.icon,
+    hp:data.hp,maxHp:data.hp,mp:data.mp,maxMp:data.mp,level:1,xp:0,nextXp:100,gold:100,
+    speed:data.speed,damage:data.damage,range:data.range,isFlying:false,phase:1,mesh:null,cd:{q:0,e:0,r:0,atk:0,dash:0}
+  };
+  player.mesh=createHeroMesh(chosenClass);
+  player.mesh.position.set(0,0,0);
+  entityGroup.add(player.mesh);
+  document.getElementById("portrait").textContent=data.icon;
+  document.getElementById("hudName").textContent=name;
+  document.getElementById("hudClass").textContent=data.name;
+}
+
+function createHeroMesh(cls){
+  const g=new THREE.Group();
+  const data=CLASS_DATA[cls];
+  const skin=mat(0xf4bf77), armor=mat(data.color,.45,.2), white=mat(0xffffff), gold=mat(0xffd166,.45,.25);
+
+  const body=new THREE.Mesh(new THREE.BoxGeometry(42,62,28),armor);body.position.y=86;body.castShadow=true;g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(28,24,18),skin);head.position.y=140;head.castShadow=true;g.add(head);
+  const hair=new THREE.Mesh(new THREE.SphereGeometry(31,20,12),cls==="ranger"?white:mat(cls==="arcanist"?0x493069:0x3b2416));hair.position.y=156;hair.scale.set(1,.55,1);g.add(hair);
+  for(let s of [-1,1]){
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(15,60,18),mat(0x26364a));leg.position.set(s*14,36,0);leg.castShadow=true;g.add(leg);
+    const arm=new THREE.Mesh(new THREE.BoxGeometry(13,55,16),skin);arm.position.set(s*36,86,0);arm.castShadow=true;g.add(arm);
+  }
+  if(cls==="ranger"){
+    for(let s of [-1,1]){
+      const wing=new THREE.Mesh(new THREE.ConeGeometry(13,48,3),mat(0xbde9ff));wing.position.set(s*42,158,0);wing.rotation.z=s*1.2;g.add(wing);
     }
+    const crown=new THREE.Mesh(new THREE.ConeGeometry(18,28,3),gold);crown.position.y=178;crown.rotation.y=Math.PI/3;g.add(crown);
   }
+  const weapon=new THREE.Mesh(new THREE.TorusGeometry(cls==="ranger"?46:24,4,10,42,cls==="ranger"?Math.PI*1.35:Math.PI*2),mat(cls==="arcanist"?0xb388ff:0x1b3440,.38,.25));
+  weapon.position.set(54,90,0);weapon.rotation.set(Math.PI/2,0,Math.PI/2);g.add(weapon);g.userData.weapon=weapon;
+  g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
+  return g;
+}
 
-  ctx.strokeStyle = "rgba(255,255,255,.035)";
-  for (let x = startX; x < c.x + W + tile; x += tile) {
-    const p = screen(x, 0);
-    ctx.beginPath();
-    ctx.moveTo(p.x, 0);
-    ctx.lineTo(p.x, H);
-    ctx.stroke();
+function createNPCs(){
+  npcs.push({name:"Luna",text:"Bem-vindo a Aetheria! Derrote os Pukis e prove seu valor.",mesh:createNPC(0xffd166),pos:new THREE.Vector3(120,0,120)});
+  npcs.push({name:"Mestre Voo",text:"Aperte F para usar sua prancha voadora. No ar você anda mais rápido.",mesh:createNPC(0x90e0ef),pos:new THREE.Vector3(-130,0,90)});
+  npcs.forEach(n=>{n.mesh.position.copy(n.pos);entityGroup.add(n.mesh)});
+}
+
+function createNPC(color){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(22,28,70,16),mat(color));body.position.y=70;body.castShadow=true;g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(24,20,16),mat(0xf4bf77));head.position.y=125;head.castShadow=true;g.add(head);
+  return g;
+}
+
+function spawnWave(phase){
+  enemies.forEach(e=>entityGroup.remove(e.mesh));enemies=[];
+  const count=phase===1?12:phase===2?16:20;
+  for(let i=0;i<count;i++){
+    const p=randomPoint();
+    enemies.push(createEnemy(phase,p.x,p.z,false));
+  }
+  if(phase>=2)spawnBoss(phase);
+}
+
+function createEnemy(phase,x,z,isBoss){
+  const biome=biomeAt(x,z);
+  const names={
+    field:["Puki Saltitante","Lobo Fofo","Cogumelo Travesso"],
+    desert:["Besouro Dourado","Minotauro Jovem","Fada de Areia"],
+    ice:["Fada Cristalina","Yeti Pequeno","Lobo Glacial"],
+    volcano:["Imp de Cinzas","Lobo de Lava","Golem Mini"],
+    ruins:["Mago Sombrio","Guardião Antigo","Mascote Abissal"]
+  }[biome]||["Puki"];
+  const name=isBoss?(phase===2?"Rei Puki":"Dragão Celeste"):names[Math.floor(Math.random()*names.length)];
+  const color=isBoss?0xffd166:biome==="desert"?0xd9a441:biome==="ice"?0x90e0ef:biome==="volcano"?0xff5733:biome==="ruins"?0x8f5bff:0x6ee56f;
+  const mesh=createEnemyMesh(color,isBoss);
+  mesh.position.set(x,0,z);
+  entityGroup.add(mesh);
+  return {name,mesh,hp:isBoss?900+phase*450:80+phase*45,maxHp:isBoss?900+phase*450:80+phase*45,damage:isBoss?22+phase*10:8+phase*4,x,z,isBoss,phase,dead:false,ai:Math.random()*6};
+}
+
+function createEnemyMesh(color,isBoss){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(isBoss?new THREE.DodecahedronGeometry(80,1):new THREE.SphereGeometry(35,16,12),mat(color));
+  body.position.y=isBoss?90:45;body.castShadow=true;g.add(body);
+  if(isBoss){
+    const crown=new THREE.Mesh(new THREE.TorusGeometry(82,6,8,40),mat(0xffd166,.35,.3));crown.position.y=175;crown.rotation.x=Math.PI/2;g.add(crown);
+    const wings=new THREE.Mesh(new THREE.BoxGeometry(210,20,8),mat(0xffffff,.5,.1));wings.position.y=118;g.add(wings);
+  }else{
+    const eyes=new THREE.Mesh(new THREE.BoxGeometry(30,8,5),mat(0x111111));eyes.position.set(0,55,31);g.add(eyes);
+  }
+  g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
+  return g;
+}
+
+function spawnBoss(phase){
+  const p=phase===2?{x:0,z:-1550}:{x:1750,z:1500};
+  boss=createEnemy(phase,p.x,p.z,true);
+  enemies.push(boss);
+  showBossDialogue(phase===2?"Rei Puki":"Dragão Celeste",phase===2?"Quem ousa invadir meu vale saltitante?":"Você chegou longe, herói. Mostre seu poder no céu!");
+}
+
+function setupQuests(){
+  quests=[
+    {id:1,title:"Primeiros Pukis",desc:"Derrote 6 monstros.",need:6,progress:0,done:false,reward:"80 ouro + 120 XP"},
+    {id:2,title:"Cristais Flutuantes",desc:"Colete 3 cristais.",need:3,progress:0,done:false,reward:"Asa Celeste"},
+    {id:3,title:"Boss da Fase 2",desc:"Derrote o Rei Puki.",need:1,progress:0,done:false,reward:"300 ouro + fase 3"}
+  ];
+}
+
+function handleKey(k){
+  if(!running)return;
+  if(k==="i")document.getElementById("inventory").style.display=document.getElementById("inventory").style.display==="block"?"none":"block";
+  if(k==="f")toggleFly();
+  if(k==="q")useSkill("q");
+  if(k==="e")useSkill("e");
+  if(k==="r")useSkill("r");
+  if(k==="shift")dash();
+}
+
+function toggleFly(e){
+  if(e)e.stopPropagation();
+  player.isFlying=!player.isFlying;
+  toast(player.isFlying?"Prancha voadora ativada!":"Você pousou.");
+}
+
+function dash(){
+  if(player.cd.dash>0)return;
+  player.cd.dash=.8;
+  const dir=getForward();
+  player.mesh.position.addScaledVector(dir,180);
+  addRingFx(player.mesh.position,0x90e0ef);
+}
+
+function getForward(){
+  const dir=new THREE.Vector3();
+  camera.getWorldDirection(dir);dir.y=0;dir.normalize();
+  return dir;
+}
+
+function basicAttack(){
+  if(player.cd.atk>0)return;
+  player.cd.atk=.35;
+  const target=findTarget(player.range);
+  if(target)damageEnemy(target,player.damage,false);
+  swingWeapon();
+}
+
+function useSkill(k){
+  if(player.cd[k]>0)return;
+  if(k==="q"){player.cd.q=2.2;const t=findTarget(player.range+80);if(t)damageEnemy(t,player.damage*1.8,false);addRingFx(player.mesh.position,0xffd166)}
+  if(k==="e"){player.cd.e=4.5;enemies.forEach(en=>{if(!en.dead&&distanceToPlayer(en)<260)damageEnemy(en,player.damage*1.2,true)});addRingFx(player.mesh.position,0x90e0ef)}
+  if(k==="r"){player.cd.r=12;enemies.forEach(en=>{if(!en.dead&&distanceToPlayer(en)<520)damageEnemy(en,player.damage*3.2,true)});addRingFx(player.mesh.position,0xb388ff)}
+}
+
+function swingWeapon(){
+  if(player.mesh.userData.weapon){
+    player.mesh.userData.weapon.rotation.z+=.65;
+    setTimeout(()=>player.mesh.userData.weapon.rotation.z-=.65,120);
   }
 }
 
-function drawLake(l) {
-  const p = screen(l.x, l.y);
-  ctx.fillStyle = "#1f6fb2";
-  roundRect(p.x, p.y, l.w, l.h, 48);
-  ctx.fill();
-  ctx.fillStyle = "rgba(255,255,255,.13)";
-  roundRect(p.x + 35, p.y + 35, l.w - 70, 22, 16);
-  ctx.fill();
-}
-
-function drawTree(t) {
-  const p = screen(t.x, t.y);
-  ctx.fillStyle = "rgba(0,0,0,.25)";
-  ctx.beginPath();
-  ctx.ellipse(p.x, p.y + t.s * .7, t.s * .8, t.s * .28, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#5a361d";
-  ctx.fillRect(p.x - 6, p.y, 12, t.s);
-
-  ctx.fillStyle = "#115c2b";
-  ctx.beginPath();
-  ctx.arc(p.x, p.y - 7, t.s, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#1f7a3b";
-  ctx.beginPath();
-  ctx.arc(p.x - t.s * .32, p.y - t.s * .35, t.s * .55, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-function drawRock(r) {
-  const p = screen(r.x, r.y);
-  ctx.fillStyle = "#747a7f";
-  ctx.beginPath();
-  ctx.ellipse(p.x, p.y, 17, 12, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = "#9aa0a6";
-  ctx.beginPath();
-  ctx.ellipse(p.x - 5, p.y - 4, 6, 3, 0, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-function drawDrop(d) {
-  const p = screen(d.x, d.y);
-  ctx.fillStyle = "rgba(0,0,0,.25)";
-  ctx.beginPath();
-  ctx.ellipse(p.x, p.y + 10, 14, 5, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.font = "24px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText(ITEM_INFO[d.item]?.icon || "?", p.x, p.y + 6);
-  ctx.textAlign = "left";
-}
-
-function drawEnemy(e) {
-  const p = screen(e.x, e.y);
-
-  ctx.fillStyle = "rgba(0,0,0,.3)";
-  ctx.beginPath();
-  ctx.ellipse(p.x, p.y + 18, e.size * .75, 7, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = e.type === "slime" ? "#54d66b" : "#9b5de5";
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, e.size / 2, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#111";
-  ctx.fillRect(p.x - 9, p.y - 4, 4, 4);
-  ctx.fillRect(p.x + 5, p.y - 4, 4, 4);
-
-  ctx.fillStyle = "#111";
-  ctx.fillRect(p.x - 22, p.y - 28, 44, 5);
-  ctx.fillStyle = "#ef476f";
-  ctx.fillRect(p.x - 22, p.y - 28, 44 * Math.max(0, e.hp / e.maxHp), 5);
-}
-
-function drawPlayer(p, isMe) {
-  const r = renderPlayers[p.id] || p;
-  const pos = screen(r.x, r.y);
-  const moving = Math.abs(p.vx) + Math.abs(p.vy) > .1;
-  const bob = moving ? Math.sin(Date.now() / 90) * 2 : 0;
-
-  ctx.fillStyle = "rgba(0,0,0,.32)";
-  ctx.beginPath();
-  ctx.ellipse(pos.x, pos.y + 27, 20, 8, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = isMe ? "#49a6ff" : p.color;
-  ctx.fillRect(pos.x - 13, pos.y - 18 + bob, 26, 33);
-
-  ctx.fillStyle = "#f4bf77";
-  ctx.fillRect(pos.x - 11, pos.y - 38 + bob, 22, 20);
-
-  ctx.fillStyle = "#1a2433";
-  ctx.fillRect(pos.x - 12, pos.y + 13 + bob, 9, 18);
-  ctx.fillRect(pos.x + 3, pos.y + 13 - bob, 9, 18);
-
-  ctx.fillStyle = "#111";
-  ctx.fillRect(pos.x - 5, pos.y - 31 + bob, 3, 3);
-  ctx.fillRect(pos.x + 4, pos.y - 31 + bob, 3, 3);
-
-  ctx.fillStyle = "#111";
-  ctx.fillRect(pos.x - 24, pos.y - 55, 48, 5);
-  ctx.fillStyle = "#ef476f";
-  ctx.fillRect(pos.x - 24, pos.y - 55, 48 * Math.max(0, p.hp / p.maxHp), 5);
-
-  ctx.fillStyle = isMe ? "#7ee787" : "#fff";
-  ctx.font = "13px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText(p.name, pos.x, pos.y - 62);
-  ctx.textAlign = "left";
-}
-
-function draw() {
-  ctx.clearRect(0, 0, W, H);
-  drawGround();
-
-  mapDecor.lakes.forEach(drawLake);
-  mapDecor.flowers.forEach(f => {
-    const p = screen(f.x, f.y);
-    ctx.fillStyle = f.c;
-    ctx.fillRect(p.x, p.y, 4, 4);
+function findTarget(range){
+  let best=null,bd=999999;
+  enemies.forEach(e=>{
+    if(e.dead)return;
+    const d=distanceToPlayer(e);
+    if(d<range&&d<bd){best=e;bd=d}
   });
-  mapDecor.rocks.forEach(drawRock);
-  mapDecor.trees.forEach(drawTree);
-
-  state.drops.forEach(drawDrop);
-  state.enemies.forEach(drawEnemy);
-
-  for (const id in state.players) {
-    drawPlayer(state.players[id], id === myId);
-  }
-
-  ctx.strokeStyle = "rgba(255,255,255,.18)";
-  const c = camera();
-  ctx.strokeRect(-c.x, -c.y, state.world.width, state.world.height);
+  return best;
 }
 
-function updateRenderPositions() {
-  for (const id in state.players) {
-    const target = state.players[id];
+function distanceToPlayer(e){
+  return e.mesh.position.distanceTo(player.mesh.position);
+}
 
-    if (!renderPlayers[id]) renderPlayers[id] = { ...target };
+function damageEnemy(e,amount,aoe){
+  e.hp-=amount;
+  floatText("-"+Math.floor(amount),e.mesh.position,aoe?0x90e0ef:0xfff1a8);
+  addHitFx(e.mesh.position);
+  if(e.hp<=0&&!e.dead)killEnemy(e);
+}
 
-    renderPlayers[id].x += (target.x - renderPlayers[id].x) * 0.28;
-    renderPlayers[id].y += (target.y - renderPlayers[id].y) * 0.28;
+function killEnemy(e){
+  e.dead=true;
+  entityGroup.remove(e.mesh);
+  player.gold+=e.isBoss?300:18;
+  gainXp(e.isBoss?300:40);
+  if(Math.random()<.45)inventory.crystal++;
+  quests[0].progress=Math.min(quests[0].need,quests[0].progress+1);
+  if(e.isBoss&&e.phase===2)quests[2].progress=1;
+  if(e.isBoss){
+    boss=null;
+    player.phase++;
+    showBossDialogue("Sistema",`Fase ${player.phase} liberada! Novas áreas e monstros apareceram.`);
+    spawnWave(player.phase);
+  }
+  toast(e.isBoss?"Boss derrotado!":"Monstro derrotado!");
+}
+
+function gainXp(v){
+  player.xp+=v;
+  if(player.xp>=player.nextXp){
+    player.xp-=player.nextXp;player.level++;player.nextXp=Math.floor(player.nextXp*1.45);
+    player.maxHp+=20;player.hp=player.maxHp;player.maxMp+=10;player.mp=player.maxMp;player.damage+=5;
+    toast("Level Up!");
   }
 }
 
-function updateUI() {
-  const p = me();
-  if (!p) return;
+function addHitFx(pos){
+  const m=new THREE.Mesh(new THREE.SphereGeometry(16,12,8),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.8}));
+  m.position.copy(pos);m.position.y+=70;m.userData.life=.35;fxGroup.add(m);
+}
 
-  document.getElementById("pName").textContent = p.name;
-  document.getElementById("online").textContent = Object.keys(state.players).length;
-  document.getElementById("level").textContent = p.level;
-  document.getElementById("gold").textContent = p.gold;
+function addRingFx(pos,color){
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(65,4,8,36),new THREE.MeshBasicMaterial({color,transparent:true,opacity:.8}));
+  ring.position.copy(pos);ring.position.y=12;ring.rotation.x=Math.PI/2;ring.userData.life=.6;fxGroup.add(ring);
+}
 
-  document.getElementById("hpText").textContent = `${Math.ceil(p.hp)}/${p.maxHp}`;
-  document.getElementById("manaText").textContent = `${Math.ceil(p.mana)}/${p.maxMana}`;
-  document.getElementById("xpText").textContent = `${p.xp}/${p.nextXp}`;
+function floatText(text,pos,color){
+  // 3D simple: use glowing sphere instead of DOM text
+  const m=new THREE.Mesh(new THREE.SphereGeometry(10,8,6),new THREE.MeshBasicMaterial({color,transparent:true,opacity:.9}));
+  m.position.copy(pos);m.position.y+=120;m.userData.life=.7;fxGroup.add(m);
+}
 
-  document.getElementById("hpBar").style.width = `${100 * p.hp / p.maxHp}%`;
-  document.getElementById("manaBar").style.width = `${100 * p.mana / p.maxMana}%`;
-  document.getElementById("xpBar").style.width = `${100 * p.xp / p.nextXp}%`;
+function showBossDialogue(name,text){
+  document.getElementById("dialogue").style.display="block";
+  document.getElementById("dialogueName").textContent=name;
+  document.getElementById("dialogueText").textContent=text;
+  dialogueTimer=5;
+}
 
-  const inv = document.getElementById("inventory");
-  inv.innerHTML = "";
-  Object.entries(p.inventory).forEach(([item, amount]) => {
-    const slot = document.createElement("div");
-    slot.className = "slot";
-    slot.innerHTML = `${ITEM_INFO[item]?.icon || "?"}<span>${amount}</span>`;
-    inv.appendChild(slot);
+function update(dt){
+  Object.keys(player.cd).forEach(k=>player.cd[k]=Math.max(0,player.cd[k]-dt));
+  if(dialogueTimer>0){dialogueTimer-=dt;if(dialogueTimer<=0)document.getElementById("dialogue").style.display="none"}
+  if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)document.getElementById("toast").style.display="none"}
+
+  const forward=getForward();
+  const right=new THREE.Vector3().crossVectors(forward,new THREE.Vector3(0,1,0)).multiplyScalar(-1);
+  let move=new THREE.Vector3();
+  if(keys.w)move.add(forward);
+  if(keys.s)move.addScaledVector(forward,-1);
+  if(keys.a)move.addScaledVector(right,-1);
+  if(keys.d)move.add(right);
+  if(move.length()>0){
+    move.normalize();
+    player.mesh.position.addScaledVector(move,player.speed*dt*55*(player.isFlying?1.7:1));
+    player.mesh.rotation.y=Math.atan2(move.x,move.z);
+  }
+  player.mesh.position.y=player.isFlying?120+Math.sin(performance.now()/250)*10:0;
+
+  enemies.forEach(e=>{
+    if(e.dead)return;
+    const toP=player.mesh.position.clone().sub(e.mesh.position);toP.y=0;
+    const d=toP.length();
+    if(d<900){toP.normalize();e.mesh.position.addScaledVector(toP,dt*(e.isBoss?70:95));e.mesh.rotation.y=Math.atan2(toP.x,toP.z)}
+    e.mesh.position.y=(e.isBoss?20:0)+Math.sin(performance.now()/300+e.ai)*6;
+    if(d<80+(e.isBoss?60:0)){player.hp-=e.damage*dt*.8;if(player.hp<=0)respawn()}
   });
 
-  const list = document.getElementById("marketList");
-  list.innerHTML = "";
-
-  if (!state.market.length) {
-    list.innerHTML = `<p class="small">Nenhum item anunciado.</p>`;
-  }
-
-  state.market.slice(-8).reverse().forEach(m => {
-    const row = document.createElement("div");
-    row.className = "marketRow";
-    row.innerHTML = `
-      <b>${m.amount}x ${ITEM_INFO[m.item]?.icon || ""} ${ITEM_INFO[m.item]?.name || m.item}</b><br>
-      Vendedor: ${m.seller}<br>
-      Preço: ${m.price} ouro
-      <button class="full" onclick="buyMarket(${m.id})">Comprar</button>
-    `;
-    list.appendChild(row);
+  fxGroup.children.slice().forEach(f=>{
+    f.userData.life-=dt;f.position.y+=dt*70;f.material.opacity=Math.max(0,f.userData.life);
+    if(f.userData.life<=0)fxGroup.remove(f);
   });
+
+  groundGroup.children.forEach(o=>{if(o.userData.float){o.rotation.y+=dt;o.position.y+=Math.sin(performance.now()/500+o.position.x)*0.12}});
+
+  updateCamera(dt);
+  updateUI();
 }
 
-function roundRect(x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
+function updateCamera(dt){
+  const target=player.mesh.position.clone();target.y+=80;
+  const desired=target.clone().add(new THREE.Vector3(0,420,620));
+  camera.position.lerp(desired,.08);
+  camera.lookAt(target);
 }
 
-function loop() {
-  updateRenderPositions();
-
-  if (noticeTimer > 0) {
-    noticeTimer--;
-  } else {
-    document.getElementById("notice").textContent = "WASD move • Espaço ataca • Drops automáticos • Mercado online";
-  }
-
-  draw();
-  requestAnimationFrame(loop);
+function respawn(){
+  player.hp=player.maxHp;player.mp=player.maxMp;player.mesh.position.set(0,0,0);toast("Você voltou ao spawn.");
 }
 
-loop();
+function updateUI(){
+  document.getElementById("levelBadge").textContent=player.level;
+  document.getElementById("gold").textContent=player.gold;
+  document.getElementById("phase").textContent=player.phase;
+  document.getElementById("hpFill").style.width=(100*player.hp/player.maxHp)+"%";
+  document.getElementById("mpFill").style.width=(100*player.mp/player.maxMp)+"%";
+  document.getElementById("xpFill").style.width=(100*player.xp/player.nextXp)+"%";
+  document.getElementById("hpText").textContent=Math.ceil(player.hp)+"/"+player.maxHp;
+  document.getElementById("mpText").textContent=Math.ceil(player.mp)+"/"+player.maxMp;
+
+  const q=document.getElementById("quests");
+  q.innerHTML="";
+  quests.forEach(quest=>{
+    const done=quest.progress>=quest.need;
+    const div=document.createElement("div");div.className="quest";
+    div.innerHTML=`<b>${done?"✅":"⭐"} ${quest.title}</b><br>${quest.desc}<br>${quest.progress}/${quest.need}<br><span class="small">${quest.reward}</span>`;
+    q.appendChild(div);
+  });
+
+  const items=document.getElementById("items");
+  items.innerHTML="";
+  const icons={potion:"🧪",crystal:"💎",feather:"🪽",bossCore:"🔱"};
+  Object.entries(inventory).forEach(([k,v])=>{
+    const it=document.createElement("div");it.className="item";it.innerHTML=`${icons[k]||"?"}<span>${v}</span>`;items.appendChild(it);
+  });
+
+  if(boss&&!boss.dead){
+    document.getElementById("bossPanel").style.display="block";
+    document.getElementById("bossName").textContent=boss.name;
+    document.getElementById("bossHp").style.width=(100*boss.hp/boss.maxHp)+"%";
+    document.getElementById("bossHpText").textContent=Math.ceil(boss.hp)+"/"+boss.maxHp;
+    document.getElementById("bossPhaseText").textContent=boss.hp<boss.maxHp*.5?"Fase furiosa: ataques mais rápidos!":"Fase normal";
+  }else document.getElementById("bossPanel").style.display="none";
+
+  drawMinimap();
+}
+
+function drawMinimap(){
+  const c=document.getElementById("minimap"),ctx=c.getContext("2d"),w=c.width,h=c.height;
+  ctx.clearRect(0,0,w,h);ctx.fillStyle="#102038";ctx.fillRect(0,0,w,h);
+  const sx=w/WORLD.w,sy=h/WORLD.h;
+  ctx.fillStyle="#55b95b";ctx.beginPath();ctx.arc(w/2,h/2,50,0,Math.PI*2);ctx.fill();
+  enemies.forEach(e=>{if(e.dead)return;ctx.fillStyle=e.isBoss?"#ffd166":"#ef476f";ctx.beginPath();ctx.arc(w/2+e.mesh.position.x*sx,h/2+e.mesh.position.z*sy,e.isBoss?4:2,0,Math.PI*2);ctx.fill()});
+  ctx.fillStyle="#7ee787";ctx.beginPath();ctx.arc(w/2+player.mesh.position.x*sx,h/2+player.mesh.position.z*sy,4,0,Math.PI*2);ctx.fill();
+}
+
+function toggleInventory(e){if(e)e.stopPropagation();const inv=document.getElementById("inventory");inv.style.display=inv.style.display==="block"?"none":"block"}
+function returnSpawn(e){if(e)e.stopPropagation();player.mesh.position.set(0,0,0);toast("Retornou ao spawn.")}
+function showHelp(e){if(e)e.stopPropagation();showBossDialogue("Ajuda","WASD move, mouse mira, clique ataca, Q/E/R skills, F voa, I inventário. Derrote bosses para avançar fases.")}
+function openMenu(e){e.stopPropagation();document.getElementById("menu").classList.add("open")}
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.style.display="block";toastTimer=2}
+
+function animate(){
+  requestAnimationFrame(animate);
+  if(!running)return;
+  const dt=Math.min(.033,clock.getDelta());
+  update(dt);
+  renderer.render(scene,camera);
+}
 </script>
 </body>
 </html>
